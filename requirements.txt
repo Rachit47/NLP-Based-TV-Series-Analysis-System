@@ -1,0 +1,5 @@
+transformers==4.44.0
+huggingface_hub==0.24.5
+nltk==3.9.1
+gradio==4.44.1
+nbformat==4.2.0
