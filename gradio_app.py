@@ -30,14 +30,14 @@ def get_themes(theme_list, subtitles_path, save_path):
     
     return fig
 
-def get_character_network(subtitles_path, ner_path):
+def get_character_network(subtitles_path,ner_path):
     ner = NamedEntityRecognizer()
-    ner_df = ner.get_ners(subtitles_path, ner_path)
-    
+    ner_df = ner.get_ners(subtitles_path,ner_path)
+
     character_network_generator = CharacterNetworkGenerator()
     relationship_df = character_network_generator.generate_character_network(ner_df)
     html = character_network_generator.draw_network_graph(relationship_df)
-    
+
     return html
 
 def main():
@@ -69,16 +69,10 @@ def main():
                     with gr.Column():
                         network_html = gr.HTML()
                     with gr.Column():
-                        subtitles_path = gr.Textbox(label="Subtitles or Script Path")
+                        subtitles_path = gr.Textbox(label="Subtutles or Script Path")
                         ner_path = gr.Textbox(label="Path to Save NER Results")
-                        get_network_graph_button = gr.Button("Get Character Network")
-                        
-                        # Connect button to the function
-                        get_network_graph_button.click(
-                            get_character_network, 
-                            inputs=[subtitles_path, ner_path], 
-                            outputs=[network_html]
-                        )
+                        get_network_graph_button = gr.Button("Display Character Network")
+                        get_network_graph_button.click(get_character_network, inputs=[subtitles_path,ner_path], outputs=[network_html])
                     
     iface.launch(share=True)
     
