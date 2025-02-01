@@ -26,8 +26,9 @@ class NamedEntityRecognizer:
             doc = self.nlp_model(sentence)
             ners = set() # to avoid duplicate character names from a sentence
             for entity in doc.ents:
-                if entity.label_ == "PERSON":
-                    first_name = entity.text.split(" ")[0]
+                if entity.label_ =="PERSON":
+                    full_name = entity.text
+                    first_name = full_name.split(" ")[0]
                     first_name = first_name.strip()
                     ners.add(first_name)
             ner_output.append(ners)
