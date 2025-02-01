@@ -1,11 +1,13 @@
 import spacy
-import os
-import sys
-import pathlib
+from nltk.tokenize import sent_tokenize
 import pandas as pd
 from ast import literal_eval
+import os 
+import sys
+import pathlib
+folder_path = pathlib.Path().parent.resolve()
+sys.path.append(os.path.join(folder_path, '../'))
 from utils import load_subtitles_dataset
-from nltk.tokenize import sent_tokenize
 
 class NamedEntityRecognizer:
     def __init__(self):
@@ -22,12 +24,13 @@ class NamedEntityRecognizer:
         if not self.nlp_model:
             raise ValueError("spaCy model not loaded properly.")
         
-        doc = self.nlp_model(script)  # Ensure nlp_model is callable
+        script_sentences = sent_tokenize(script)  # Tokenize script into sentences
         ner_output = []
         
-        for sentence in doc.sents:
+        for sentence in script_sentences:
+            doc = self.nlp_model(sentence)  # Process each sentence separately
             ners = set()  # Avoid duplicates in the same sentence
-            for entity in sentence.ents:
+            for entity in doc.ents:
                 if entity.label_ == "PERSON":
                     full_name = entity.text
                     first_name = full_name.split(" ")[0].strip()
@@ -37,21 +40,18 @@ class NamedEntityRecognizer:
         return ner_output
 
     def get_ners(self, dataset_path, save_path=None):
-        if save_path and os.path.exists(save_path) and os.path.getsize(save_path) > 0:
+        if save_path and os.path.exists(save_path):
             df = pd.read_csv(save_path)
-            df['ners'] = df['ners'].apply(lambda x: self.safe_literal_eval(x))
+            df['ners'] = df['ners'].apply(lambda x: literal_eval(x) if isinstance(x, str) else x)
             return df
         
+        # Load dataset
         df = load_subtitles_dataset(dataset_path)
+        
+        # Run inference
         df['ners'] = df['script'].apply(self.get_ners_inference)
         
         if save_path:
             df.to_csv(save_path, index=False)
-            
+        
         return df
-
-    def safe_literal_eval(self, value):
-        try:
-            return literal_eval(value) if isinstance(value, str) else value
-        except (ValueError, SyntaxError):
-            return []  

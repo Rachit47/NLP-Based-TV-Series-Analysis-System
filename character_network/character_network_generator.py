@@ -1,7 +1,6 @@
 import pandas as pd
 import networkx as nx
 from pyvis.network import Network
-from itertools import chain
 
 class CharacterNetworkGenerator():
     def __init__(self):
@@ -25,7 +24,7 @@ class CharacterNetworkGenerator():
                 ]
                 '''
                 # Flattening the 2D list into 1D list
-                previous_entities_flattened = list(chain(*previous_entities_in_window))
+                previous_entities_flattened = sum(previous_entities_in_window, [])
                 
                 for entity in sentence:
                     for entity_in_window in previous_entities_flattened:
@@ -48,6 +47,7 @@ class CharacterNetworkGenerator():
     
     def draw_network_graph(self, relationship_df):
         relationship_df = relationship_df.sort_values('value', ascending=False)  # Sorting again here to maintain order
+        relationship_df = relationship_df.head(200)  # Limiting to top 200 relationships to keep graph readable
         
         G = nx.from_pandas_edgelist(
             relationship_df,
@@ -57,7 +57,7 @@ class CharacterNetworkGenerator():
             create_using=nx.Graph()
         )
         
-        net = Network(notebook=True, width="1000px", height="700px", bgcolor="#222222", font_color="#ADF802", cdn_resources="remote")
+        net = Network(notebook=True, width="1000px", height="700px", bgcolor="#222222", font_color="white", cdn_resources="remote")
         node_degree = dict(G.degree)
         
         nx.set_node_attributes(G, node_degree, 'size')
@@ -72,3 +72,4 @@ class CharacterNetworkGenerator():
     allowpaymentrequest="" frameborder="0" srcdoc='{html}'></iframe>"""
         
         return output_html
+
