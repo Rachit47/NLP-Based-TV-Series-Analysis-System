@@ -2,7 +2,7 @@
 This project utilises NLP techniques and large language models (LLMs) to analyse the anime series. The goal is to produce a comprehensive dataset, extract themes, classify text, and generate a character network. The end result will be an intuitive web-based GUI created with Gradio.
 
 ## Project Features
-We have divided the project into four key components:
+
 **1. Web Scraping (crawler)**
    - Utilizes Scrapy to extract structured information from Narutopedia.
    - Builds a dataset containing essential details about Naruto characters, themes, and dialogues.
